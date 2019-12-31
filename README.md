@@ -9,4 +9,5 @@ An advanced multi-shell operating system for ComputerCraft.
 - ~~Monitor support~~
 - ~~Do BIOS~~
 - ~~Icons for apps~~
-- Updater
+- ~~Updater~~
+- And finially, Installer
