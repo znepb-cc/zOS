@@ -56,7 +56,8 @@
 					label3 = "Language",
 					label4 = "Time zone",
 					label5 = "24-hour Time",
-					label6 = 'Show launcher name as @'
+					label6 = 'Show launcher name as @',
+					label7 = 'Auto-update'
 				},
 				customization = {
 					name = 'Theme',

@@ -14,6 +14,12 @@ local function getSetting(name)
     return data
 end
 
+if fs.exists("/zOS/System/n_Updater.lua") then
+    fs.delete("/zOS/System/Updater.lua")
+    fs.copy("/zOS/System/n_Updater.lua", "/zOS/System/Updater.lua")
+    fs.delete("/zOS/System/n_Updater.lua")
+end
+
 local progress = 40
 local files = 0
 local cFile = 0
@@ -68,19 +74,22 @@ if not fs.exists("/User/thishasbeenoofed.txt") and data.password ~= "" then
 end
 progress = 90
 paintutils.drawLine(w/2-20/2, h/2*1.5, w/2-20/2+((progress/100)*20), h/2*1.5, colors.lightBlue)
-local f = http.get("https://raw.githubusercontent.com/znepb/zOS/master/versions/current.txt")
-local data = f.readAll()
-f.close()
-local newVersion = tonumber(data)
-local currentVersionF = fs.open('zOS/Configuration/version.txt', "r")
-local currentVersion = tonumber(currentVersionF.readAll())
-currentVersionF.close()
-if newVersion > currentVersion then
-    term.setCursorPos(w/2-string.len("yay new version")/2,h/2*1.5)
-    shell.run('zOS/System/Updater.lua')
+
+if getSetting('autoUpdate') == true then
+    local f = http.get("https://raw.githubusercontent.com/znepb/zOS/"..getSetting('branch').."/versions/current.txt")
+    local data = f.readAll()
+    f.close()
+    local newVersion = tonumber(data)
+    local currentVersionF = fs.open('zOS/Configuration/version.txt', "r")
+    local currentVersion = tonumber(currentVersionF.readAll())
+    currentVersionF.close()
+    if newVersion > currentVersion then
+        term.setCursorPos(w/2-string.len("yay new version")/2,h/2*1.5)
+        shell.run('zOS/System/Updater.lua')
+    end
+    progress = 100
+    paintutils.drawLine(w/2-20/2, h/2*1.5, w/2-20/2+((progress/100)*20), h/2*1.5, colors.lightBlue)
 end
-progress = 100
-paintutils.drawLine(w/2-20/2, h/2*1.5, w/2-20/2+((progress/100)*20), h/2*1.5, colors.lightBlue)
 
 term.setBackgroundColor(colors.black)
 

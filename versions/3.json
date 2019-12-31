@@ -1,0 +1,11 @@
+{
+	"updateNotes": "Added auto-update toggle, and multiple versions can be installed, for example going from version 3 to version 10.",
+	"files": [
+		"zOS/System/Settings.lua",
+		"zOS/System/n_Updater.lua",
+		"zOS/System/Boot.lua",
+		"zOS/Configuration/configuration.txt",
+		"zOS/System/sysinfo.txt".
+		"zOS/Language/en-us.txt"
+	]
+}
