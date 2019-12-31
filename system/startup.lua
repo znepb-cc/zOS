@@ -1,0 +1,1 @@
+shell.run("/zOS/System/Boot.lua")

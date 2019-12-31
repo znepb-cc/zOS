@@ -1,0 +1,7 @@
+term.setCursorPos(1,1)
+multishell.setTitle(multishell.getFocus(), "Paint")
+print("Please enter file path:")
+term.write("> ")
+local input = read()
+multishell.setTitle(multishell.getFocus(), "Paint - "..input..".nfp")
+shell.run("/rom/programs/fun/advanced/paint.lua "..input..".nfp")

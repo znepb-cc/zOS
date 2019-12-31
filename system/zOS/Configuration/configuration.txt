@@ -1,0 +1,12 @@
+{
+  monitor = 1,
+  timeZone = -5,
+  use24hrTime = false,
+  username = "znepb",
+  selectedTheme = 1,
+  useAtOnLauncher = true,
+  monitorScale = 0.5,
+  alwaysBootToMonitor = false,
+  language = "en-us",
+  password = "",
+}

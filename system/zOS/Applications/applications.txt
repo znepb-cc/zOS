@@ -1,0 +1,37 @@
+{
+  {
+    nameType = "lang",
+    version = 1.8,
+    fileIconName = "shell.zif",
+    fileName = "shell",
+    filePath = "/rom/programs/shell.lua",
+  },
+  {
+    nameType = "lang",
+    version = 1,
+    fileIconName = "settings.zif",
+    fileName = "settings",
+    filePath = "/zOS/System/Settings.lua",
+  },
+  {
+    nameType = "lang",
+    version = 1,
+    fileIconName = "zShop.zif",
+    fileName = "zShop",
+    filePath = "/zOS/Applications/zShop.lua",
+  },
+  {
+    nameType = "lang",
+    version = 1,
+    fileIconName = "zFile.zif",
+    fileName = "zFile",
+    filePath = "/zOS/Applications/zFile.lua",
+  },
+  {
+    filePath = "/zOS/Applications/zsa002.lua",
+    version = 1,
+    fileIconName = "idkifthissduibhg.zif",
+    zShopId = "zsa002",
+    fileName = "PAIN",
+  },
+}

@@ -1,0 +1,188 @@
+{
+	version = 1,
+	languageName = 'English',
+	boot = {
+		bios = 'Press F2 for BIOS'
+	},
+	bios = {
+		title = 'zOS Boot Utility',
+		option1 = 'Start CraftOS',
+		option2 = 'Debug Boot (NYI)',
+		option3 = 'Safe Boot (also NYI)',
+		option4 = 'Boot from disk',
+		exit = 'Exit'
+	},
+	login = {
+		title = 'Welcome to zOS',
+		username = 'Username',
+		password = 'Password',
+		incorrect = 'Incorrect password',
+		welcome = 'Welcome to zOS'
+	},
+	launcher = {
+		name = '@',
+		alternateName = 'Launcher',
+		welcome = "Welcome to zOS",
+		shutdown = "Shutdown",
+		reboot = "Reboot",
+		logout = "Logout"
+	},
+	notifications = {
+		name = 'Notifications',
+		noNotifications = 'No new notifications. *crickets chirping*',
+		newNotifications = '%s new notifications',
+		clear = 'Clear all',
+	},
+	applications = {
+		shell = {
+			name = 'Shell'
+		},
+		settings = {
+			name = 'Settings',
+			loading = 'Please wait...',
+			appliedOnReboot = 'This setting will be applied on reboot.',
+			dialogOk = 'Ok',
+			localTimeZone = "Local",
+			tab = {
+				general = {
+					name = 'General',
+					title = 'General',
+					label1 = 'Username',
+					label2 = 'You can change your password in Login.',
+					button1 = 'Change',
+					selectUsername = {
+						text = 'Please enter a new username'
+					},
+					label3 = "Language",
+					label4 = "Time zone",
+					label5 = "24-hour Time",
+					label6 = 'Show launcher name as @'
+				},
+				customization = {
+					name = 'Theme',
+					title = 'Choose a theme'
+				},
+				security = {
+					name = 'Login',
+					title = 'Login',
+					label1 = 'Use Password',
+					newPassword = {
+						text = 'Please enter a new password:'
+					}
+				},
+				monitor = {
+					name = "Monitor"
+				}
+			}
+		},
+		zShop = {
+			name = 'zShop',
+			loading = {
+				settingUp = 'Setting up...',
+				api = 'Downloading APIs...',
+				jsonApi = 'Downloading JSON API...',
+				downloadShopInfo = 'Downloading shop information...',
+				downloadApps = 'Downloading apps...',
+				downloadHomepage = 'Downloading homepage...',
+				downloadVersionData = 'Downloading version data...',
+				complete = 'Complete!'
+			},
+			noInternet = {
+				title = 'An error occured',
+				couldNotConnect = 'Could not connect to the zOS App Store.',
+				checkConnection = 'Check your connection and try again.',
+				pressKey = 'Press any key to exit.',
+			},
+			home = {
+				featured = 'Featured',
+				newest = 'Newest',
+				dataLoading = 'Downloading: https://znepb.github.io/zShop/icons/%s.zif'
+			},
+			app = {
+				back = '< Back',
+				by = 'By: %s',
+				install = 'Install',
+				downloading = 'Downloading application...',
+				removing = 'Removing application...',
+				complete = 'Complete!',
+				run = 'Run',
+				uninstall = 'Uninstall',
+				doneNotification = '%s has finished installing.'
+			}
+		},
+		zFile = {
+			name = 'zFile',
+			fileReceive = {
+				title = "File Received",
+				body = "A file has been received from Computer #%s. ",
+				fromId = "From ID: %s",
+				fileName = "File name: %s",
+				accept = " Accept ",
+				decline = " Decline "
+			},
+			fileSend = {
+				title = "File Sharing",
+				idBody = "Enter the ID of the computer you would like to share to",
+				passwordBody = "Enter the password of the computer you would like to share to"
+			},
+			fileReceiveWaiting = {
+				title = "File Sharing",
+				body = "Your computer is now available for file sharing. Use the information below to recieve files! Click Exit to exit file sharing mode.",
+				exit = "Exit",
+				id = "ID: ",
+				password = "Password: "
+			},
+			newFile = {
+				title = "New file",
+				body = "Enter a name for the new file"
+			},
+			newFolder = {
+				title = "New folder",
+				body = "Enter a name for the new folder"
+			},
+			moveTo = {
+				title = "Move to",
+				body = "Enter the path you want to move the file to"
+			},
+			copyTo = {
+				title = "Copy to",
+				body = "Enter the path you want to copy the file to"
+			},
+			rename = {
+				title = "Rename",
+				body = "Enter a new name for the new folder",
+			},
+			nav = {
+				file = {
+					name = "File",
+					option = {
+						new = "New",
+						newFolder = "New folder",
+						open = "Open",
+						edit = "Edit",
+						saveToDisk = "Save to disk"
+					}
+				},
+				edit = {
+					name = "Edit",
+					option = {
+						copy = "Copy",
+						paste = "Paste",
+						cut = "Cut",
+						moveTo = "Move to",
+						copyTo = "Copy to",
+						delete = "Delete",
+						rename = "Rename"
+					}
+				},
+				send = {
+					name = "Share",
+					option = {
+						openSharingMenu = "Open receiving menu",
+						sendToPeer = "Send to peer"
+					}
+				}
+			}
+		}
+	}
+}

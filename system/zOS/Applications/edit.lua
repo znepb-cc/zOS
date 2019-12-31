@@ -1,0 +1,7 @@
+term.setCursorPos(1,1)
+multishell.setTitle(multishell.getFocus(), "Edit")
+print("Please enter file path:")
+term.write("> ")
+local input = read()
+multishell.setTitle(multishell.getFocus(), "Edit - "..input..".lua")
+shell.run("/rom/programs/edit.lua "..input..".lua")
