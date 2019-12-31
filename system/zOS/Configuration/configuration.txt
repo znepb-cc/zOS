@@ -2,7 +2,7 @@
   monitor = 1,
   timeZone = -5,
   use24hrTime = false,
-  username = "znepb",
+  username = "User",
   selectedTheme = 1,
   useAtOnLauncher = true,
   monitorScale = 0.5,
