@@ -1,6 +1,12 @@
 # zOS
-An advanced multi-shell operating system for ComputerCraft. 
+An advanced multi-shell operating system for ComputerCraft.  
 **Full release January 3rd, 2020** (May actually be earlier, why? Because I'm impatient)
+
+## Installer
+To install from `master`:  
+`pastebin run RVcUVaFG`  
+To install from `development`:  
+`pastebin run RVcUVaFG --dev`  
 
 ### zOS To-Do list
 
@@ -10,4 +16,6 @@ An advanced multi-shell operating system for ComputerCraft.
 - ~~Do BIOS~~
 - ~~Icons for apps~~
 - ~~Updater~~
-- And finially, Installer
+- ~~And finially, Installer~~
+
+#### Completed!
