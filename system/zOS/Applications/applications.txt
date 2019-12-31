@@ -27,11 +27,4 @@
     fileName = "zFile",
     filePath = "/zOS/Applications/zFile.lua",
   },
-  {
-    filePath = "/zOS/Applications/zsa002.lua",
-    version = 1,
-    fileIconName = "idkifthissduibhg.zif",
-    zShopId = "zsa002",
-    fileName = "PAIN",
-  },
 }

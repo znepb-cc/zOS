@@ -1,8 +1,0 @@
-{
-  doFillDiagonal = false,
-  undoBufferSize = 8,
-  readNonImageAsNFP = true,
-  gridBleedThrough = false,
-  useFlattenGIF = true,
-  doFillAnimation = false,
-}
