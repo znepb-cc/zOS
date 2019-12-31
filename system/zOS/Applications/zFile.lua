@@ -739,7 +739,7 @@ function main()
                 elseif menu == 4 then
                     if x >= w/2-13 and x <= w/2-13+string.len(lang.applications.zFile.fileReceive.accept) and y == h/2+2 then
                         local hRecv = fs.open(dir..recvTable.fileName, "w")
-                        hRecv.write(recvTable.data)
+                        hRecv.write(recvTable.fileContents)
                         hRecv.close()
                         recvTable = nil
                         menu = 1

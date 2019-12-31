@@ -1,0 +1,7 @@
+{
+	"updateNotes": "Fixed an issue with zFile's file sharing.",
+	"files": [
+		"zOS/Applications/zFile.lua",
+		"zOS/System/sysinfo.txt"
+	]
+}
