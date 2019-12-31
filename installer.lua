@@ -68,7 +68,25 @@ if installerInfo.requiredSpace < fs.getFreeSpace('/') then
         fileH.write(data.readAll())
         fileH.close()
     end
-    
+	
+    local function setSetting(name, value)
+		local f = fs.open("/zOS/Configuration/configuration.txt", "r")
+		local configData = textutils.unserialize(f.readAll())
+		f.close()
+
+		local f = fs.open("/zOS/Configuration/configuration.txt", "w")
+		configData[name] = value
+		f.write(textutils.serialize(configData))
+		f.close()
+
+		return true
+	end
+	
+	setsetting('branch', 'master')
+	if args[1] == "--dev" then
+		setsetting('branch', 'development')
+	end
+	
     mainDraw()
     updateText('Restarting...')
     sleep(0.5)

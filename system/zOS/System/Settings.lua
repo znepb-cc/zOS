@@ -8,7 +8,7 @@ function main()
 	local dropdown = {}
 	local dropdownSetting = ''
 	local dropdownX, dropdownY, dropdownEndX = 0, 0, 0
-	local languages = {"en-us"}
+	local languages = {"en-us","test-us"}
 	local timeZoneOffsets = {["auto"] = "Auto", [0] = "UTC", [-4] = "EDT", [-5] = "EST", [-7] = "MST", [-6] = "MDT"}
 	local timeZoneOffsetsOtherWay = {["Auto"] = "auto", ["UTC"] = 0, ["EDT"] = -4, ['EST'] = -5, ["MST"] = -7, ["MDT"] = -6 }
 	local monitors
@@ -266,6 +266,12 @@ function main()
 			term.setTextColor(theme.text)
 			term.write(lang.applications.settings.tab.general.label6)
 			drawToggle(w-3,14,getSetting('useAtOnLauncher'))
+
+			term.setCursorPos(2,16)
+			term.setBackgroundColor(theme.background)
+			term.setTextColor(theme.text)
+			term.write(lang.applications.settings.tab.general.label7)
+			drawToggle(w-3,16,getSetting('autoUpdate'))
 		elseif page == 2 then
 			term.setBackgroundColor(theme.background)
 			term.setTextColor(theme.text)
@@ -393,6 +399,10 @@ function main()
 					drawDropdownSelection(w-string.len(string.format(" %s \31 ", getSetting('language'))),8,languages,selectedLanguage,'language')
 				elseif m == 1 and x >= w-string.len(string.format(" %s \31 ", timeZoneOffsets[getSetting('timeZone')])) and x <= w-1 and y == 10 and dropdownSetting == '' then
 					drawDropdownSelection(w-string.len(string.format(" %s \31 ", timeZoneOffsets[getSetting('timeZone')])),10,timeZoneOffsets,getSetting('timeZone'),'timeZone')
+				elseif m == 1 and x >= w-3 and x <= w-1 and y == 16 then
+					local value = toggle(getSetting("autoupdate"))
+					setSetting("autoupdate", value)
+					drawToggle(w-3,16,value)
 				else
 					if dropdown ~= {} then
 						local count = 1
