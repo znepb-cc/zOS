@@ -8,7 +8,7 @@ function main()
 	local dropdown = {}
 	local dropdownSetting = ''
 	local dropdownX, dropdownY, dropdownEndX = 0, 0, 0
-	local languages = {"en-us","test-us"}
+	local languages = {"en-us"}
 	local timeZoneOffsets = {["auto"] = "Auto", [0] = "UTC", [-4] = "EDT", [-5] = "EST", [-7] = "MST", [-6] = "MDT"}
 	local timeZoneOffsetsOtherWay = {["Auto"] = "auto", ["UTC"] = 0, ["EDT"] = -4, ['EST'] = -5, ["MST"] = -7, ["MDT"] = -6 }
 	local monitors
