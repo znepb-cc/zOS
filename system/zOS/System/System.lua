@@ -20,6 +20,7 @@ local function systemWorker()
     local nScrollPos = 1
     local bScrollRight = false
     local notifications = {}
+    local bAltHeld = false
 
     local menuMainTextColor, menuMainBgColor, menuOtherTextColor, menuOtherBgColor
     if parentTerm.isColor() then
@@ -129,8 +130,13 @@ local function systemWorker()
                     if tProcesses[nCurrentProcess].sTitle ~= "@" then
                         if tProcesses[nCurrentProcess].sTitle ~= "Launcher.lua" then
                             if tProcesses[nCurrentProcess].sTitle ~= "Launcher" then
+                                if bAltHeld then
+                                    parentTerm.setTextColor(colors.red)
+                                else
+                                    parentTerm.setTextColor(menuMainTextColor)
+                                end
                                 parentTerm.setBackgroundColor(menuOtherBgColor)
-                                parentTerm.setTextColor(menuMainTextColor)
+                                
                                 if nCharCount > nSize then
                                     parentTerm.setCursorPos(w-3,1)
                                     parentTerm.write(" \215 ")
@@ -349,9 +355,31 @@ local function systemWorker()
     end
 
     function multishell.removeProcess(n)
-        resumeProcess( n, 'terminate' )
-        redrawMenu()
-        selectProcess(n)
+        local nLastProcess = n
+        selectProcess(1)
+        if bAltHeld == false then
+            local tProcess = tProcesses[ nLastProcess ]
+            local sFilter = tProcess.sFilter
+            if sFilter == nil or sFilter == sEvent or sEvent == "terminate" then
+                tProcess.terminal = nil
+                tProcess.window = nil
+                tProcess = nil
+                tProcesses[nLastProcess] = nil
+                os.queueEvent('multishell_redraw')
+            end
+        else
+            local tProcess = tProcesses[ nLastProcess ]
+            local sFilter = tProcess.sFilter
+            if sFilter == nil or sFilter == sEvent or sEvent == "terminate" then
+                local nPreviousProcess = nRunningProcess
+                nRunningProcess = 1
+                term.redirect( tProcess.terminal )
+                local ok, result = coroutine.resume( tProcess.co, 'terminate' )
+                tProcess = nil
+                nRunningProcess = nPreviousProcess
+                os.queueEvent('multishell_redraw')
+            end
+        end
     end
 
     function multishell.sendNotification(application, message)
@@ -385,6 +413,40 @@ local function systemWorker()
         return notifications
     end
 
+    function multishell.getSetting(name)
+        local f = fs.open("/zOS/Configuration/configuration.txt", "r")
+        local configData = textutils.unserialize(f.readAll())
+        local data = configData[name]
+        f.close()
+        return data
+    end
+
+    function multishell.getLanguage()
+        local f = fs.open("/zOS/Language/"..multishell.getSetting('language')..".txt", "r")
+        local data = textutils.unserialize(f.readAll())
+        print(language)
+        f.close()
+        return data
+    end
+
+    function multishell.loadTheme()
+        local f = fs.open("/zOS/Configuration/configuration.txt", "r")
+        local configData = textutils.unserialize(f.readAll())
+        local sTheme = configData.selectedTheme
+        if configData.useAtOnLauncher == false then
+            local w, h = term.getSize()
+            multishell.setTitle(1, lang.launcher.alternateName)
+        end
+        f.close()
+
+        local f = fs.open("/zOS/Configuration/themes.txt", "r")
+        local data = textutils.unserialize(f.readAll())[sTheme]
+        f.close()
+        
+        return data
+    end
+
+
     -- Begin
     parentTerm.clear()
     setMenuVisible( true )
@@ -392,6 +454,7 @@ local function systemWorker()
         ["shell"] = shell,
         ["multishell"] = multishell,
     }, args[1] ) )
+    
     redrawMenu()
     os.queueEvent('multishell_redraw')
 
@@ -410,6 +473,19 @@ local function systemWorker()
         elseif sEvent == "char" or sEvent == "key" or sEvent == "key_up" or sEvent == "paste" or sEvent == "terminate" then
             -- Keyboard event
             -- Passthrough to current process
+            if sEvent == "key" then
+                local k = tEventData[2]
+                if k == keys.leftAlt then
+                    bAltHeld = true
+                    redrawMenu()
+                end
+            elseif sEvent == "key_up" then
+                local k = tEventData[2]
+                if k == keys.leftAlt then
+                    bAltHeld = false
+                    redrawMenu()
+                end
+            end
             resumeProcess( nCurrentProcess, table.unpack( tEventData, 1, tEventData.n ) )
             if cullProcess( nCurrentProcess ) then
                 setMenuVisible( true )
@@ -442,51 +518,15 @@ local function systemWorker()
                     }, "/zOS/System/Notifications.lua"))
                     os.queueEvent('multishell_redraw')
                 elseif x == w-3 and y == 1 and #notifications < 10 and not bScrollRight and nCurrentProcess ~= 1 then
-                    local nLastProcess = nCurrentProcess
-                    selectProcess(1)
-                    local tProcess = tProcesses[ nLastProcess ]
-                    local sFilter = tProcess.sFilter
-                    if sFilter == nil or sFilter == sEvent or sEvent == "terminate" then
-                        local nPreviousProcess = nRunningProcess
-                        nRunningProcess = 1
-                        term.redirect( tProcess.terminal )
-                        local ok, result = coroutine.resume( tProcess.co, 'terminate' )
-                        tProcess = nil
-                        nRunningProcess = nPreviousProcess
-                        os.queueEvent('multishell_redraw')
-                    end
+                    multishell.removeProcess(nCurrentProcess)
                     
                     redrawMenu()
                 elseif x == w-2 and y == 1 and bScrollRight and nCurrentProcess ~= 1 then
-                    local nLastProcess = nCurrentProcess
-                    selectProcess(1)
-                    local tProcess = tProcesses[ nLastProcess ]
-                    local sFilter = tProcess.sFilter
-                    if sFilter == nil or sFilter == sEvent or sEvent == "terminate" then
-                        local nPreviousProcess = nRunningProcess
-                        nRunningProcess = 1
-                        term.redirect( tProcess.terminal )
-                        local ok, result = coroutine.resume( tProcess.co, 'terminate' )
-                        tProcess = nil
-                        nRunningProcess = nPreviousProcess
-                        os.queueEvent('multishell_redraw')
-                    end
+                    multishell.removeProcess(nCurrentProcess)
                     
                     redrawMenu()
                 elseif x == w-4 and y == 1 and #notifications >= 10 and not bScrollRight and nCurrentProcess ~= 1 then
-                    local nLastProcess = nCurrentProcess
-                    selectProcess(1)
-                    local tProcess = tProcesses[ nLastProcess ]
-                    local sFilter = tProcess.sFilter
-                    if sFilter == nil or sFilter == sEvent or sEvent == "terminate" then
-                        local nPreviousProcess = nRunningProcess
-                        nRunningProcess = 1
-                        term.redirect( tProcess.terminal )
-                        local ok, result = coroutine.resume( tProcess.co, 'terminate' )
-                        tProcess = nil
-                        nRunningProcess = nPreviousProcess
-                        os.queueEvent('multishell_redraw')
-                    end
+                    multishell.removeProcess(nCurrentProcess)
                     
                     redrawMenu()
                 elseif bScrollRight and x == term.getSize() then
@@ -593,4 +633,3 @@ if not ok then
     os.pullEventRaw("key")
     os.reboot()
 end
-

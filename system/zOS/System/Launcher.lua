@@ -4,47 +4,12 @@ os.loadAPI("/zOS/System/API/zif.lua")
 local tFiles = {}
 local tFilePositions = {}
 local selectedId = 0
-local theme = {}
 local internetOkay = false
 
-local function getSetting(name)
-	local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-	local configData = textutils.unserialize(f.readAll())
-	local data = configData[name]
-	f.close()
-	return data
-end
-
-local function getLanguageData(language)
-	local f = fs.open("/zOS/Language/"..language..".txt", "r")
-	local data = textutils.unserialize(f.readAll())
-	print(language)
-	f.close()
-	return data
-end
-
-local lang = getLanguageData(getSetting('language'))
+local lang = multishell.getLanguage()
 multishell.setTitle(1, lang.launcher.name)
-local username = getSetting("username")
-
-local function loadTheme()
-	local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-	local configData = textutils.unserialize(f.readAll())
-	local sTheme = configData.selectedTheme
-	if configData.useAtOnLauncher == false then
-		local w, h = term.getSize()
-		multishell.setTitle(1, lang.launcher.alternateName)
-	end
-	f.close()
-
-	local f = fs.open("/zOS/Configuration/themes.txt", "r")
-	local data = textutils.unserialize(f.readAll())[sTheme]
-	f.close()
-	
-	return data
-end
-
-theme = loadTheme()
+local username = multishell.getSetting("username")
+local theme = multishell.loadTheme()
 
 local menu = 1
 
@@ -213,7 +178,7 @@ local function events()
 								['shell'] = shell,
 								['multishell'] = multishell,
 							}, v.path))
-							
+							os.queueEvent('multishell_redraw')
 						else
 							selectedId = i
 							drawMenu()
@@ -239,7 +204,7 @@ local function internetTest()
 	sleep(1)
 	-- Checking internet: #
 	-- Disconnected: !
-	-- Online: •
+	-- Online: ?
 	while true do
 		term.setCursorPos(w-3,2)
 		term.setTextColor(colors.yellow)

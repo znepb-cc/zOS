@@ -1,7 +1,6 @@
 function main()
 	local tFiles = {}
 	local tFilePositions = {}
-	local theme = {}
 	local w, h = term.getSize()
 	local currentPage = 1
 	local selectedId = 0
@@ -12,24 +11,10 @@ function main()
 	local timeZoneOffsets = {["auto"] = "Auto", [0] = "UTC", [-4] = "EDT", [-5] = "EST", [-7] = "MST", [-6] = "MDT"}
 	local timeZoneOffsetsOtherWay = {["Auto"] = "auto", ["UTC"] = 0, ["EDT"] = -4, ['EST'] = -5, ["MST"] = -7, ["MDT"] = -6 }
 	local monitors
+	local getSetting = multishell.getSetting
 
-	local function getSetting(name)
-		local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-		local configData = textutils.unserialize(f.readAll())
-		local data = configData[name]
-		f.close()
-		return data
-	end
-
-	local function getLanguageData(language)
-		local f = fs.open("/zOS/Language/"..language..".txt", "r")
-		local data = textutils.unserialize(f.readAll())
-		print(language)
-		f.close()
-		return data
-	end
-
-	local lang = getLanguageData(getSetting('language'))
+	local theme = multishell.loadTheme()
+	local lang = multishell.getLanguage()
 	multishell.setTitle(multishell.getCurrent(), lang.applications.settings.name)
 
 	local function setSetting(name, value)
@@ -46,7 +31,7 @@ function main()
 	end
 
 	local function drawTop(selected)
-		local tabs = {lang.applications.settings.tab.general.name, lang.applications.settings.tab.customization.name, lang.applications.settings.tab.security.name, lang.applications.settings.tab.monitor.name}
+		local tabs = {lang.applications.settings.tab.general.name, lang.applications.settings.tab.customization.name, lang.applications.settings.tab.security.name, lang.applications.settings.tab.info.name}
 		term.setBackgroundColor(colors.gray)
 		term.setCursorPos(1,1)
 		term.clearLine()
@@ -74,19 +59,6 @@ function main()
 		else
 			return true
 		end
-	end
-
-	local function loadTheme()
-		local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-		local configData = textutils.unserialize(f.readAll())
-		local sTheme = configData.selectedTheme
-		f.close()
-
-		local f = fs.open("/zOS/Configuration/themes.txt", "r")
-		local data = textutils.unserialize(f.readAll())[sTheme]
-		f.close()
-		
-		return data
 	end
 
 	local function drawTileApplication(tData, nX, nY, nID)
@@ -132,8 +104,6 @@ function main()
 		
 		hApplicationsFile.close()
 	end
-
-	theme = loadTheme()
 
 	local function drawDialog(text)
 		local dialogWidth = string.len(text)+4
@@ -296,32 +266,15 @@ function main()
 			term.setBackgroundColor(theme.background)
 			term.setTextColor(theme.text)
 			term.setCursorPos(2,3)
-			term.write('Monitor')
-
+			term.write(lang.applications.settings.tab.info.title)
 			term.setCursorPos(2,5)
-			term.write('Choose which monitor to boot to')
-			drawDropdown(w-string.len(string.format(" %s \31 ", monitors[getSetting('monitor')])),5,monitors,getSetting('monitor'))
+			local versionFile = fs.open('zOS/System/sysinfo.txt', "r")
+			local version = textutils.unserialize(versionFile.readAll()).displayVersion
+			versionFile.close()
+			term.write(lang.applications.settings.tab.info.version:format(version))
+			term.setCursorPos(2,6)
+			term.write(lang.applications.settings.tab.info.branch:format(getSetting('branch')))
 
-			term.setBackgroundColor(theme.background)
-			term.setTextColor(theme.text)
-			term.setCursorPos(2,7)
-			term.write('Always boot to monitor')
-			drawToggle(w-3,7,getSetting('alwaysBootToMonitor'))
-
-			term.setBackgroundColor(theme.background)
-			term.setTextColor(theme.text)
-			term.setCursorPos(2,9)
-			term.write('Monitor text scale')
-			term.setCursorPos(w-9, 9)
-			term.setBackgroundColor(colors.gray)
-			term.setTextColor(colors.lightGray)
-			term.write(" -     + ")
-			if string.len(tostring(getSetting('monitorScale'))) == 1 then
-				term.setCursorPos(w-5,9)
-			elseif string.len(tostring(getSetting('monitorScale'))) == 3 then
-				term.setCursorPos(w-6,9)
-			end
-			term.write(getSetting('monitorScale'))
 		elseif page == "dev" then
 			term.setCursorPos(2,3)
 			term.setBackgroundColor(theme.background)
@@ -347,7 +300,7 @@ function main()
 				drawPage(2)
 			elseif x >= 17 and x <= 23 and y == 1 then
 				drawPage(3)
-			elseif x >= 24 and x <= 32 and y == 1 then
+			elseif x >= 24 and x <= 29 and y == 1 then
 				drawPage(4)
 			elseif x == w-1 and y == 1 and multishell.zOSenabled == nil then
 				os.reboot()

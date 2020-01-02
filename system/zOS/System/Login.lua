@@ -120,7 +120,7 @@ local function performLogin(decrypt, str)
 		decryptFiles("/User/")
 	end
 
-	shell.run("/zOS/System/System.lua", "/zOS/System/Launcher.lua")
+	shell.run("/zOS/System/System.lua", "/zOS/System/Kernel.lua")
 end
 
 local go = true
