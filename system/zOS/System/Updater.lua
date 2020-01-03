@@ -17,7 +17,7 @@ local function getSetting(name)
     return data
 end
 
-local branch = getSetting(name)
+local branch = getSetting("branch")
 
 local function updateText(text)
     term.setCursorPos(w/2-string.len(text)/2,h/2*1.5)
