@@ -43,7 +43,6 @@
 		"/zOS/System/Settings.lua",
 		"/zOS/System/sysinfo.txt",
 		"/zOS/System/System.lua",
-		"/zOS/System/systemfiles.txt",
 		"/zOS/System/Updater.lua",
 	]
 }
