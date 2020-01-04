@@ -46,7 +46,7 @@ local file = fs.open("/zOS/Configuration/version.txt", "w")
 file.write(newV)
 file.close()
 
-for cv = newV, newV+(newV-oldV) do
+for cv = oldV+1, newV do
 
     updateText('Downloading update information...')
     local data = http.get("https://raw.githubusercontent.com/znepb/zOS/"..branch.."/versions/"..cv..".json")
