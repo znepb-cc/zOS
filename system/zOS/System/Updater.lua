@@ -46,7 +46,7 @@ local file = fs.open("/zOS/Configuration/version.txt", "w")
 file.write(newV)
 file.close()
 
-for cv = 1, newV-oldV do
+for cv = newV, newV+(newV-oldV) do
 
     updateText('Downloading update information...')
     local data = http.get("https://raw.githubusercontent.com/znepb/zOS/"..branch.."/versions/"..cv..".json")
@@ -59,7 +59,7 @@ for cv = 1, newV-oldV do
     paintutils.drawLine(w/2-20/2, h/2*1.5, w/2+20/2-1, h/2*1.5, colors.lightGray)
     paintutils.drawLine(w/2-20/2, h/2*1.5, w/2-20/2+((progress/100)*20), h/2*1.5, colors.lightBlue)
     for i, v in pairs(updateInformation.files) do
-        dlText("Downloading update "..cv.."/"..newV-oldV)
+        dlText("Downloading update "..cv-oldV.."/"..newV-oldV)
         term.setCursorPos(1,1)
         term.setBackgroundColor(colors.black)
         
