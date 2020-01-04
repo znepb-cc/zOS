@@ -1,0 +1,6 @@
+{
+	"updateNotes": "Fixed updater",
+	"files": [
+		"zOS/System/n_Updater.lua"
+	]
+}
