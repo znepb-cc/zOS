@@ -5,7 +5,7 @@
 		"zOS/System/n_Updater.lua",
 		"zOS/System/Boot.lua",
 		"zOS/Configuration/configuration.txt",
-		"zOS/System/sysinfo.txt".
+		"zOS/System/sysinfo.txt",
 		"zOS/Language/en-us.txt"
 	]
 }
