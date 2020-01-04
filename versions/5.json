@@ -7,7 +7,7 @@
 	"files": [
 		"/zOS/Applications/peripherals.lua",
 		"/zOS/Applications/zFile.lua",
-		"/zOS/Configuration/configuration.lua",
+		"/zOS/Configuration/configuration.txt",
 		"/zOS/Language/en-us.txt",
 		"/zOS/System/Boot.lua",
 		"/zOS/System/Launcher.lua",
