@@ -17,14 +17,16 @@ local function getSetting(name)
     return data
 end
 
-local branch = getSetting(name)
+local branch = getSetting("branch")
 
 local function updateText(text)
+    term.setBackgroundColor(colors.black)
     term.setCursorPos(w/2-string.len(text)/2,h/2*1.5)
     term.write(text)
 end
 
 local function dlText(text)
+    term.setBackgroundColor(colors.black)
     term.setCursorPos(w/2-string.len(text)/2,h/2*1.5+2)
     term.write(text)
 end
@@ -44,7 +46,7 @@ local file = fs.open("/zOS/Configuration/version.txt", "w")
 file.write(newV)
 file.close()
 
-for cv = 1, newV-oldV do
+for cv = oldV+1, newV do
 
     updateText('Downloading update information...')
     local data = http.get("https://raw.githubusercontent.com/znepb/zOS/"..branch.."/versions/"..cv..".json")
@@ -56,9 +58,8 @@ for cv = 1, newV-oldV do
     progress = 0
     paintutils.drawLine(w/2-20/2, h/2*1.5, w/2+20/2-1, h/2*1.5, colors.lightGray)
     paintutils.drawLine(w/2-20/2, h/2*1.5, w/2-20/2+((progress/100)*20), h/2*1.5, colors.lightBlue)
-    print(updateInformation.files[1])
     for i, v in pairs(updateInformation.files) do
-        dlText("Downloading update "..cv.."/"..newV-oldV)
+        dlText("Downloading update "..cv-oldV.."/"..newV-oldV)
         term.setCursorPos(1,1)
         term.setBackgroundColor(colors.black)
         
@@ -69,7 +70,6 @@ for cv = 1, newV-oldV do
         file.write(fileInfo)
         file.close()
 
-        mainDraw()
         progress = (i/#updateInformation.files)*100
         paintutils.drawLine(w/2-20/2, h/2*1.5, w/2+20/2-1, h/2*1.5, colors.lightGray)
         paintutils.drawLine(w/2-20/2, h/2*1.5, w/2-20/2+((progress/100)*20)-1, h/2*1.5, colors.lightBlue)
