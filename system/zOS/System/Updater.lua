@@ -70,7 +70,6 @@ for cv = newV, newV+(newV-oldV) do
         file.write(fileInfo)
         file.close()
 
-        mainDraw()
         progress = (i/#updateInformation.files)*100
         paintutils.drawLine(w/2-20/2, h/2*1.5, w/2+20/2-1, h/2*1.5, colors.lightGray)
         paintutils.drawLine(w/2-20/2, h/2*1.5, w/2-20/2+((progress/100)*20)-1, h/2*1.5, colors.lightBlue)
