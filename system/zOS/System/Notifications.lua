@@ -47,8 +47,8 @@ local function main()
                 term.setCursorPos(w/2+16, pos)
                 term.write('\215') -- ×
 
-                term.setCursorPos(w/2+15-string.len(textutils.formatTime(v.time, getSetting('use24hrTime'))), pos)
-                term.write(textutils.formatTime(v.time, getSetting('use24hrTime')))
+                term.setCursorPos(w/2+15-string.len(textutils.formatTime(v.time, multishell.getSetting('use24hrTime'))), pos)
+                term.write(textutils.formatTime(v.time, multishell.getSetting('use24hrTime')))
                 table.insert(closePositions, {x = w/2+16, y = pos, id = i})
                 pos = pos + 1
                 fullPos = fullPos + 1

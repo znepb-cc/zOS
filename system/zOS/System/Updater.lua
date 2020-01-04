@@ -20,11 +20,13 @@ end
 local branch = getSetting("branch")
 
 local function updateText(text)
+    term.setBackgroundColor(colors.black)
     term.setCursorPos(w/2-string.len(text)/2,h/2*1.5)
     term.write(text)
 end
 
 local function dlText(text)
+    term.setBackgroundColor(colors.black)
     term.setCursorPos(w/2-string.len(text)/2,h/2*1.5+2)
     term.write(text)
 end
@@ -56,7 +58,6 @@ for cv = 1, newV-oldV do
     progress = 0
     paintutils.drawLine(w/2-20/2, h/2*1.5, w/2+20/2-1, h/2*1.5, colors.lightGray)
     paintutils.drawLine(w/2-20/2, h/2*1.5, w/2-20/2+((progress/100)*20), h/2*1.5, colors.lightBlue)
-    print(updateInformation.files[1])
     for i, v in pairs(updateInformation.files) do
         dlText("Downloading update "..cv.."/"..newV-oldV)
         term.setCursorPos(1,1)

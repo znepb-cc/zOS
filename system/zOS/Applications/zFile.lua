@@ -158,7 +158,6 @@ function main()
             term.setCursorPos(x+1,y+i-1)
             print(v.text)
         end
-
     end
 
     local function textDialog(title,message)

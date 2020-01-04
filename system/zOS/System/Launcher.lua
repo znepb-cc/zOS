@@ -5,6 +5,9 @@ local tFiles = {}
 local tFilePositions = {}
 local selectedId = 0
 local internetOkay = false
+local scrollPos = 0
+local maxY = 0
+local alreadySet = false
 
 local lang = multishell.getLanguage()
 multishell.setTitle(1, lang.launcher.name)
@@ -67,18 +70,35 @@ end
 local function loadApplications()
 	local hApplicationsFile = fs.open("/zOS/Applications/applications.txt", "r")
 	tFiles = textutils.unserialize(hApplicationsFile.readAll())
-	local x = 2
-	local y = 4
+	local perRow = math.floor(w/11)
+	local cRow = 1
+	local rowStart = w-perRow*11
+	if w == 51 then
+		perRow = 5
+		rowStart = 2
+	elseif w == 39 then
+		perRow = 3
+		rowStart = 5
+	end
+	local x = rowStart
+	local y = 4+scrollPos
+	
 	tFilePositions = {}
 	
 	for i, v in pairs(tFiles) do
 		drawTileApplication(v, x, y, i)
 		table.insert(tFilePositions, {x = x, y = y, path = v.filePath})
-		if x >= w-11 then
+		cRow = cRow + 1
+		if cRow > perRow then
 			y = y + 6
-			x = 2
+			if scrollPos == 0 then
+				maxY = y+8
+			end
+			x = rowStart
+			cRow = 1
 		else
 			x = x + 10
+			
 		end
 		
 	end
@@ -89,13 +109,19 @@ end
 local function drawMenu()
 	term.setBackgroundColor(theme.background)
 	term.clear()
+
+	loadApplications()
+
+	paintutils.drawFilledBox(1,1,w,3,theme.background)
 	term.setCursorPos(2,2)
 	term.setTextColor(theme.text)
 	term.write(username.." \31")
 
-	term.setBackgroundColor(theme.background)
-	term.setTextColor(theme.text)
-	printCenter(lang.launcher.welcome, 2)
+	if w >= 30 then
+		term.setBackgroundColor(theme.background)
+		term.setTextColor(theme.text)
+		printCenter(lang.launcher.welcome, 2)
+	end
 
 	term.setCursorPos(w-1,2)
 	term.write("%")
@@ -109,8 +135,6 @@ local function drawMenu()
 		term.write("\7")
 	end
 	term.setTextColor(theme.text)
-	
-	loadApplications()
 end
 
 
@@ -194,6 +218,20 @@ local function events()
 				drawMenu()
 				menu = 1
 			end
+		elseif e[1] == "mouse_scroll" then
+			local d, x, y = e[2], e[3], e[4]
+			if d == 1 then --down
+				
+				if math.abs(scrollPos) < math.abs(maxY-h) then
+					scrollPos = scrollPos - 1
+				end
+			elseif d == -1 then --up
+				if scrollPos ~= 0 then
+					scrollPos = scrollPos + 1
+				end
+            end
+            
+			drawMenu()
 		end
 	end
 end

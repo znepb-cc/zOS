@@ -97,7 +97,7 @@ local function performLogin(decrypt, str)
 	term.setBackgroundColor(colors.lightBlue)
 	term.setTextColor(theme.text)
 	term.clear()
-	term.setCursorPos(w/2-string.len(lang.login.welcome)/2,h/2)
+	term.setCursorPos(w/2-string.len(lang.login.welcome)/2,h/2+1)
 	term.write(lang.login.welcome)
 	sleep(1)
 	

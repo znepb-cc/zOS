@@ -195,6 +195,18 @@
 				name = "Name",
 				type = "Type",
 			},
+			peripheralDD = {
+				name = " Peripheral ",
+				rename = "Rename",
+				remove = "Remove",
+				resetName = "Reset name"
+			},
+			monitorDD = {
+				name = " Monitor ",
+				setPrimary = "Set primary",
+				bootToMonitorDisabled = "[ ] Boot to monitor",
+				bootToMonitorEnabled = "[\4] Boot to monitor",
+			},
 			itemMenu = {
 				name = "Name: %s",
 				type = "Type: %s",

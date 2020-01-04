@@ -9,6 +9,13 @@ local function main()
     local formattedPeripheralList = {}
     local menu = 0
     local selectedId = 0
+    local selected = 0
+    local selectedPeripheral = 0
+    local listX
+    local listY
+    local selectedList
+    local listMaxX
+    local dropdown = false
 
     multishell.setTitle(multishell.getFocus(), lang.applications.peripherals.title)
 
@@ -30,6 +37,19 @@ local function main()
         return nil
     end
 
+    local function setSetting(name, value)
+		local f = fs.open("/zOS/Configuration/configuration.txt", "r")
+		local configData = textutils.unserialize(f.readAll())
+		f.close()
+
+		local f = fs.open("/zOS/Configuration/configuration.txt", "w")
+		configData[name] = value
+		f.write(textutils.serialize(configData))
+		f.close()
+
+		return true
+	end
+
     local function updateFormattedPeripheralList()
         -- Load peripherals file
         local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "r")
@@ -50,7 +70,8 @@ local function main()
 
         for i, v in pairs(updateRequest) do
             local tbl = {}
-            if searchPeripheralsForName(v) == nil then
+            local item = searchPeripheralsForName(v)
+            if formattedPeripheralList[item] == nil then
                 tbl = {
                     name = v,
                     customName = v,
@@ -58,19 +79,22 @@ local function main()
                     connected = true,
                 }
             else
-                local item = searchPeripheralsForName(v)
-                for i, v in pairs(formattedPeripheralList[item]) do
-                    table.insert(tbl, v)
-                end
+                tbl = {
+                    name = v,
+                    customName = formattedPeripheralList[item].customName,
+                    type = peripheral.getType(v) or formattedPeripheralList[item].type,
+                    connected = true,
+                }
+
                 if peripheral.getType(v) == nil or peripheral.getType(v) == "nil" or peripheral.getType(v) == "" then
                     tbl = {
                         name = v,
-                        customName = v,
+                        customName = formattedPeripheralList[item].customName,
                         type = formattedPeripheralList[item].type,
                         connected = false,
                     }
 
-                    if tbl.type == "computer" and tbl.connected == false then
+                    if tbl.type == "computer" or tbl.type == "turtle" and tbl.connected == false then
                         tbl.id = formattedPeripheralList[item].id
                         tbl.label = formattedPeripheralList[item].label
                         tbl.isOn = formattedPeripheralList[item].isOn
@@ -88,18 +112,13 @@ local function main()
                         end
                     end
                 else
-                    tbl = {
-                        name = v,
-                        customName = v,
-                        type = peripheral.getType(v),
-                        connected = true,
-                    }
+                    tbl = formattedPeripheralList[item]
                 end
             end
 
             -- comupters
 
-            if tbl.type == "computer" and tbl.connected == true then
+            if tbl.type == "computer" and tbl.connected == true or tbl.type == "turtle" and tbl.connected == true then
                 local computer = peripheral.wrap(tbl.name)
                 tbl.id = computer.getID()
                 tbl.label = computer.getLabel() or "None"
@@ -117,7 +136,13 @@ local function main()
                 elseif drive.isDiskPresent() == false then
                     tbl.diskType = "No disk"
                 end
-                
+            elseif tbl.type == "monitor" and tbl.connected == true then
+                if tbl.primary == nil then
+                    tbl.primary = false
+                end
+                if tbl.textScale == nil then
+                    tbl.textScale = 1
+                end
             end
 
             newTable[i] = tbl
@@ -150,7 +175,24 @@ local function main()
         updateFormattedPeripheralList()
     end
 
-    local function draw()
+    local function renamePeripheral(id, name)
+        -- Load peripherals file
+        local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "r")
+        newFPL = textutils.unserialize(peripheralsFile.readAll())
+        peripheralsFile.close()
+
+        local newTable = newFPL
+        newTable[id].customName = name
+
+        -- Save peripherals file
+        local formattedPeripheralsString = textutils.serialize(newTable)
+        local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "w")
+        peripheralsFile.write(formattedPeripheralsString)
+        peripheralsFile.close()
+        formattedPeripheralList = newTable
+    end
+
+    local function draw(selected)
         menu = 1
 
         term.setBackgroundColor(theme.background)
@@ -159,33 +201,84 @@ local function main()
         peripheralList = peripheral.getNames() -- Update in case any new peripherals were added since last draw
         updateFormattedPeripheralList()
 
+        -- Draw top
+
+        term.setCursorPos(1,1)
+        term.setBackgroundColor(colors.gray)
+        term.setTextColor(colors.lightGray)
+        term.clearLine()
+        if selected == 1 then 
+            term.setBackgroundColor(colors.lightGray)
+            term.setTextColor(colors.gray)
+        end
+        write(lang.applications.peripherals.peripheralDD.name)
+        term.setCursorPos(1+string.len(lang.applications.peripherals.peripheralDD.name),1)
+        term.setBackgroundColor(colors.gray)
+        term.setTextColor(colors.lightGray)
+        if selected == 2 then
+            term.setBackgroundColor(colors.lightGray)
+            term.setTextColor(colors.gray)
+        end
+        write(lang.applications.peripherals.monitorDD.name)
+
         -- Draw key
 
-        term.setCursorPos(2,1)
+        term.setCursorPos(2,2)
         term.setBackgroundColor(colors.gray)
         term.setTextColor(colors.lightGray)
         term.clearLine()
         term.write(lang.applications.peripherals.key.name)
-        term.setCursorPos(w/2,1)
+        term.setCursorPos(w/2,2)
         term.write(lang.applications.peripherals.key.type)
         term.setTextColor(theme.text)
 
         -- Draw peripheral list
 
         for i, v in pairs(formattedPeripheralList) do
-            term.setCursorPos(2,i+1)
+            term.setCursorPos(2,i+2)
             term.setBackgroundColor(theme.background)
-            term.setTextColor(theme.text)
-            if (i % 2 == 0) then
+            if selectedPeripheral == i then
                 term.setBackgroundColor(colors.lightGray)
+            end
+            term.setTextColor(theme.text)
+            if v.primary == true then
+                term.setTextColor(colors.green)
             end
             term.clearLine()
             if v.connected == false then
                 term.setTextColor(colors.red)
             end
-            term.write(v.name)
-            term.setCursorPos(w/2,i+1)
+            term.write(v.customName)
+            term.setCursorPos(w/2,i+2)
             term.write(v.type)
+        end
+    end
+
+    local function drawDropdown(x,y,list,selected)
+        menu = 1
+        listX = x
+        listY = y
+        selectedList = list
+        dropdown = true
+        draw(selected)
+        term.setCursorPos(x,y)
+        local maxLength = 0
+        
+        for i, v in ipairs(list) do
+            if string.len(v.text) > maxLength then
+                maxLength = string.len(v.text)
+            end
+        end
+        listMaxX = maxLength
+        paintutils.drawFilledBox(x,y,x+maxLength+1,y+#list-1, colors.gray)
+        
+        for i, v in pairs(list) do
+            term.setTextColor(colors.lightGray)
+            if v.condition() == true then
+                term.setTextColor(colors.white)
+            end
+            term.setCursorPos(x+1,y+i-1)
+            print(v.text)
         end
     end
 
@@ -235,7 +328,7 @@ local function main()
 
         -- Stuff for computers
 
-        if data.type == "computer" then
+        if data.type == "computer" or data.type == "turtle" then
 
             -- Draw computer information
 
@@ -321,10 +414,148 @@ local function main()
                 term.setTextColor(colors.lightGray)
                 term.write(lang.applications.peripherals.itemMenu.drive.stop)
             end
+        elseif data.type == "monitor" then
+            term.setCursorPos(2,6)
+            term.write("Text Scale")
+            term.setCursorPos(2,7)
+            term.setBackgroundColor(colors.lightGray)
+            term.setTextColor(colors.gray)
+            term.write(" - ")
+            term.setCursorPos(8,7)
+            term.write(" + ")
+            if string.len(tostring(data.textScale)) == 3 then
+                term.setCursorPos(5,7)
+                term.write(data.textScale)
+            elseif string.len(tostring(data.textScale)) == 1 then
+                term.setCursorPos(5,7)
+                term.write(" "..data.textScale.." ")
+            end
         end
     end
 
+    local function textDialog(title,message)
+        paintutils.drawFilledBox(w/2-15,h/2-4,w/2+16,h/2+4,colors.white)
+		paintutils.drawBox(w/2-15,h/2-4,w/2+16,h/2+4,colors.lightGray)
+		paintutils.drawLine(w/2-15,h/2-4,w/2+16,h/2-4,colors.gray)
+		term.setCursorPos(w/2-14,h/2-4)
+		term.setTextColor(colors.lightGray)
+		term.write(title)
+		local lineChar = 1
+        local str = message
+		local line = ""
+		term.setTextColor(colors.gray)
+		term.setBackgroundColor(colors.white)
+		pos = h/2-3
+        for i = 1, string.len(str) do
+            if lineChar == 31 then
+                lineChar = 1
+                line = ""
+                pos = pos + 1
+            end
+            line = line .. string.sub(str, i, i)
+            term.setCursorPos(w/2-14, pos)
+            term.write(line)
+            lineChar = lineChar + 1
+		end
+        paintutils.drawLine(w/2-13,h/2+2,w/2+14,h/2+2,colors.gray)
+        term.setCursorPos(w/2-12,h/2+2)
+        term.setTextColor(colors.lightGray)
+        local text = read()
+        draw()
+        return text
+    end
+
+    local peripheralDropdown = {
+        {
+            text = lang.applications.peripherals.peripheralDD.rename,
+            condition = function() return selectedPeripheral ~= 0 end,
+            action = function()
+                if selectedPeripheral ~= 0 then
+                    local name = textDialog("Rename", "Enter a new name for the peripheral")
+                    renamePeripheral(selectedPeripheral, name)
+                    updateFormattedPeripheralList()
+                    draw()
+                end
+            end
+        },
+        {
+            text = lang.applications.peripherals.peripheralDD.remove,
+            condition = function() return selectedPeripheral ~= 0 and formattedPeripheralList[selectedPeripheral].connected == false end,
+            action = function()
+                if selectedPeripheral ~= 0 then
+                    if formattedPeripheralList[selectedPeripheral].connected == false then
+                        removeDisconnectedPeripheral(selectedPeripheral)
+                        selectedPeripheral = 0
+                        draw()
+                    end
+                end
+            end
+        },
+        {
+            text = lang.applications.peripherals.peripheralDD.resetName,
+            condition = function() return selectedPeripheral ~= 0 and formattedPeripheralList[selectedPeripheral].name ~= formattedPeripheralList[selectedPeripheral].customName end,
+            action = function()
+                if selectedPeripheral ~= 0 then
+                    if formattedPeripheralList[selectedPeripheral].name ~= formattedPeripheralList[selectedPeripheral].customName then
+                        renamePeripheral(selectedPeripheral, formattedPeripheralList[selectedPeripheral].name)
+                        updateFormattedPeripheralList()
+                        draw()
+                    end
+                end
+            end
+        },
+    }
+
+    local monitorDropdown = {
+        {
+            text = lang.applications.peripherals.monitorDD.setPrimary,
+            condition = function() if selectedPeripheral ~= 0 then return formattedPeripheralList[selectedPeripheral].type == "monitor" and formattedPeripheralList[selectedPeripheral].connected == true and formattedPeripheralList[selectedPeripheral].primary == false else return false end end,
+            action = function()
+                if selectedPeripheral ~= 0 then
+                    if formattedPeripheralList[selectedPeripheral].type == "monitor" and formattedPeripheralList[selectedPeripheral].connected == true and formattedPeripheralList[selectedPeripheral].primary == false then
+                        -- Load peripherals file
+                        local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "r")
+                        newFPL = textutils.unserialize(peripheralsFile.readAll())
+                        peripheralsFile.close()
+
+                        for i, v in pairs(newFPL) do
+                            if v.type == "monitor" then
+                                if v.primary == true then
+                                    v.primary = false
+                                end
+                            end
+                        end
+
+                        newFPL[selectedPeripheral].primary = true
+
+                        -- Save peripherals file
+                        local formattedPeripheralsString = textutils.serialize(newFPL)
+                        local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "w")
+                        peripheralsFile.write(formattedPeripheralsString)
+                        peripheralsFile.close()
+                        formattedPeripheralList = newFPL
+
+                        draw()
+                    end
+                end
+            end
+        },
+        {
+            text = ddText,
+            condition = function() return true end,
+            action = function()
+                if multishell.getSetting('bootToMonitor') == true then
+                    setSetting('bootToMonitor', false)
+                elseif multishell.getSetting('bootToMonitor') == false then
+                    setSetting('bootToMonitor', true)
+                end
+                draw()
+            end
+        }
+    }
+
     draw()
+    
 
     -- Application loop
 
@@ -334,18 +565,53 @@ local function main()
         if e[1] == 'mouse_click' then
             local m, x, y = e[2], e[3], e[4]
 
+
             if menu == 1 then
-                for i, v in pairs(formattedPeripheralList) do
-                    if y == i+1 then
-                        loadPeripheral(i)
+                if dropdown == true then
+                    local found = false
+                    for i, v in pairs(selectedList) do
+                        if x >= listX and x <= listX+listMaxX and y == listY+i-1 then
+                            v.action()
+                            found = true
+                        end
                     end
+
+                    if found == false then
+                        dropdown = false
+                        selectedList = nil
+                        menu = 1
+                        --draw()
+                    end
+                end
+
+                for i, v in pairs(formattedPeripheralList) do
+                    if y == i+2 and dropdown == false then
+                        if selectedPeripheral == i then
+                            loadPeripheral(i)
+                            selectedPeripheral = 0
+                        else 
+                            selectedPeripheral = i
+                            draw()
+                        end
+                    end
+                end
+                
+                if y == 1 and x >= 1 and x <= string.len(lang.applications.peripherals.peripheralDD.name) then
+                    drawDropdown(1,2,peripheralDropdown, 1)
+                elseif y == 1 and x >= string.len(lang.applications.peripherals.peripheralDD.name) and x <= string.len(lang.applications.peripherals.peripheralDD.name)+string.len(lang.applications.peripherals.monitorDD.name) then
+                    if multishell.getSetting('bootToMonitor') == true then
+                        monitorDropdown[2].text = lang.applications.peripherals.monitorDD.bootToMonitorEnabled
+                    else
+                        monitorDropdown[2].text = lang.applications.peripherals.monitorDD.bootToMonitorDisabled
+                    end
+                    drawDropdown(string.len(lang.applications.peripherals.peripheralDD.name),2,monitorDropdown, 2)
                 end
             elseif menu == 2 then
                 local data = formattedPeripheralList[selectedId]
                 if x == w-1 and y == 1 then
                     draw()
                 elseif data.connected == true then
-                    if data.type == "computer" then
+                    if data.type == "computer" or data.type == "turtle" then
                         if data.isOn == true then
                             if x >= 2 and x <= 2+string.len(lang.applications.peripherals.itemMenu.computer.reboot) and y == 9 then
                                 local computer = peripheral.wrap(data.name)
@@ -406,6 +672,60 @@ local function main()
                                     ['multishell'] = multishell,
                                 }, "/zOS/Applications/zFile.lua", "/"..data.mountPath.."/"))
                                 os.queueEvent('multishell_redraw')
+                            end
+                        end
+                    elseif data.type == "monitor" then
+                        if x >= 2 and x <= 4 and y == 7 then
+                            if data.textScale ~= 0.5 then
+                                term.setBackgroundColor(colors.gray)
+                                term.setTextColor(colors.lightGray)
+                                term.setCursorPos(2,7)
+                                term.write(" - ")
+                                -- Load peripherals file
+                                local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "r")
+                                newFPL = textutils.unserialize(peripheralsFile.readAll())
+                                peripheralsFile.close()
+
+                                for i, v in pairs(newFPL) do
+                                    if i == selectedId then
+                                        v.textScale = v.textScale - 0.5
+                                    end
+                                end
+
+                                -- Save peripherals file
+                                local formattedPeripheralsString = textutils.serialize(newFPL)
+                                local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "w")
+                                peripheralsFile.write(formattedPeripheralsString)
+                                peripheralsFile.close()
+                                formattedPeripheralList = newFPL
+                                sleep(0.1)
+                                loadPeripheral(selectedId)
+                            end
+                        elseif x >= 8 and x <= 10 and y == 7 then
+                            if data.textScale ~= 5 then
+                                term.setBackgroundColor(colors.gray)
+                                term.setTextColor(colors.lightGray)
+                                term.setCursorPos(8,7)
+                                term.write(" + ")
+                                -- Load peripherals file
+                                local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "r")
+                                newFPL = textutils.unserialize(peripheralsFile.readAll())
+                                peripheralsFile.close()
+
+                                for i, v in pairs(newFPL) do
+                                    if i == selectedId then
+                                        v.textScale = v.textScale + 0.5
+                                    end
+                                end
+
+                                -- Save peripherals file
+                                local formattedPeripheralsString = textutils.serialize(newFPL)
+                                local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "w")
+                                peripheralsFile.write(formattedPeripheralsString)
+                                peripheralsFile.close()
+                                formattedPeripheralList = newFPL
+                                sleep(0.1)
+                                loadPeripheral(selectedId)
                             end
                         end
                     end

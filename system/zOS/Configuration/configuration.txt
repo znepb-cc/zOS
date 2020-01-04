@@ -1,4 +1,5 @@
 {
+  bootToMonitor = true,
   timeZone = -5,
   use24hrTime = false,
   autoupdate = true,

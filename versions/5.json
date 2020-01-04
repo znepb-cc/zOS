@@ -1,0 +1,19 @@
+{
+	"updateNotes": [
+		"- Added monitor options to peripherals",
+		"- Fixed some sizing issues",
+		"- Fixed notifications"
+	],
+	"files": [
+		"/zOS/Applications/peripherals.lua",
+		"/zOS/Applications/zFile.lua",
+		"/zOS/Configuration/configuration.lua",
+		"/zOS/Language/en-us.txt",
+		"/zOS/System/Boot.lua",
+		"/zOS/System/Launcher.lua",
+		"/zOS/System/Login.lua",
+		"/zOS/System/n_Updater.lua",
+		"/zOS/System/Notifications.lua",
+		"/zOS/System/Settings.lua"
+	]
+}
