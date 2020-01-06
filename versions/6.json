@@ -6,7 +6,7 @@
 		"/zOS/System/AddProgram.lua",
 		"/zOS/System/Boot.lua",
 		"/zOS/System/Launcher.lua",
-		"/zOS/System/sysinfo.lua",
+		"/zOS/System/sysinfo.txt",
 		"/zOS/System/n_Updater.lua"
 	]
 }
