@@ -1,4 +1,4 @@
 {
-    displayVersion = "zOS dev-1.1.0.3",
-    date = "Jan. 5th, 2019"
+    displayVersion = "zOS 1.1",
+    date = "Jan. 6th, 2019"
 }
