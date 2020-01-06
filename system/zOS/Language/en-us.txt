@@ -25,7 +25,6 @@
 		welcome = "Welcome to zOS",
 		shutdown = "Shutdown",
 		reboot = "Reboot",
-		logout = "Logout"
 	},
 	notifications = {
 		name = 'Notifications',

@@ -8,6 +8,10 @@ local internetOkay = false
 local scrollPos = 0
 local maxY = 0
 local alreadySet = false
+local menu = 1
+local selectedList
+local dropdown = false
+local listMaxX = 0
 
 local lang = multishell.getLanguage()
 multishell.setTitle(1, lang.launcher.name)
@@ -21,29 +25,31 @@ local function printCenter(sText, nYpos)
 	term.write(sText)
 end
 
-local function drawContentMenuStructure(xPos, yPos, width, height)
-	term.setCursorPos(xPos,yPos)
-	term.setTextColor(theme.dropdownOutline)
-	term.setBackgroundColor(theme.dropdownBackground)
-	term.write("\151"..string.rep("\131", width))
-	term.setTextColor(theme.dropdownBackground)
-	term.setBackgroundColor(theme.dropdownOutline)
-	term.write("\148")
-	for i = yPos+1, yPos+height do
-		term.setTextColor(theme.dropdownOutline)
-		term.setBackgroundColor(theme.dropdownBackground)
-		term.setCursorPos(xPos,i)
-		term.write("\149"..string.rep(" ", width))
-		term.setTextColor(theme.dropdownBackground)
-		term.setBackgroundColor(theme.dropdownOutline)
-		term.write("\149")
+local function drawDropdown(x,y,list)
+	menu = 2
+	listX = x
+	listY = y
+	selectedList = list
+	dropdown = true
+	term.setCursorPos(x,y)
+	local maxLength = 0
+	
+	for i, v in ipairs(list) do
+		if string.len(v.text) > maxLength then
+			maxLength = string.len(v.text)
+		end
 	end
-	term.setCursorPos(xPos,yPos+height)
-	term.setTextColor(theme.dropdownOutline)
-	term.setBackgroundColor(theme.dropdownBackground)
-	term.write("\141"..string.rep("\140", width))
-				
-	term.write("\142")
+	listMaxX = maxLength
+	paintutils.drawFilledBox(x,y,x+maxLength+1,y+#list-1, colors.gray)
+	
+	for i, v in pairs(list) do
+		term.setTextColor(colors.lightGray)
+		if v.condition() == true then
+			term.setTextColor(colors.white)
+		end
+		term.setCursorPos(x+1,y+i-1)
+		print(v.text)
+	end
 end
 
 local function drawTileApplication(tData, nX, nY, nID)
@@ -150,6 +156,22 @@ local function drawMenu()
 	term.setTextColor(theme.text)
 end
 
+local userDropdown = {
+	{
+		text = lang.launcher.shutdown,
+		condition = function() return true end,
+		action = function()
+			os.shutdown()
+		end
+	},
+	{
+		text = lang.launcher.reboot,
+		condition = function() return true end,
+		action = function()
+			os.reboot()
+		end
+	},
+}
 
 drawMenu()
 
@@ -160,16 +182,27 @@ local function events()
 		if e[1] == "mouse_click" then
 			local clickedOnce = false
 			local m, x, y = e[2], e[3], e[4]
-			if x >= 2 and x <= string.len(username)+3 and y == 2 and menu == 1 then
-				drawContentMenuStructure(2,3,10,3)
-				term.setTextColor(theme.dropdownText)
-				term.setCursorPos(3,4)
-				term.write(lang.launcher.shutdown)
-				term.setCursorPos(3,5)
-				term.write(lang.launcher.reboot)
-				term.setCursorPos(2,2)
+			if dropdown == true and menu == 2 then
+				local found = false
+				for i, v in pairs(selectedList) do
+					if x >= listX and x <= listX+listMaxX and y == listY+i-1 then
+						v.action()
+						found = true
+						
+					end
+				end
+
+				if found == false then
+					dropdown = false
+					selectedList = nil
+					menu = 1
+					drawMenu()
+				end
+			elseif x >= 2 and x <= string.len(username)+3 and y == 2 and menu == 1 then
+				drawDropdown(2,3,userDropdown)
 				term.setTextColor(theme.text)
 				term.setBackgroundColor(theme.selectionBackground)
+				term.setCursorPos(2,2)
 				term.write(username.." \31")
 				menu = 2
 			elseif x == w-1 and y == 2 and menu == 1 then
@@ -198,27 +231,6 @@ local function events()
 				term.setTextColor(theme.text)
 				term.setCursorPos(w-3, 2)
 				term.write('+')
-			elseif menu == 2 then
-				
-
-				if x >= 2 and x <= 12 and y == 4 then
-					term.setBackgroundColor(colors.black)
-					term.clear()
-					sleep(0.5)
-					os.shutdown()
-				elseif x == w-2 and y == 2 then
-					drawMenu()
-				elseif x >= 2 and x <= 12 and y == 5 then
-					term.setBackgroundColor(colors.black)
-					term.clear()
-					sleep(0.5)
-					os.reboot()
-				elseif x >= 2 and x <= 12 and y == 6 then
-					
-				else
-					menu = 1
-					drawMenu()
-				end
 			else
 				for i, v in pairs(tFilePositions) do
 					if m == 1 and x >= v.x and x <= v.x+9 and y >= v.y and y <= v.y+5 then
