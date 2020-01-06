@@ -1,44 +1,9 @@
 local function main()
     local w, h = term.getSize()
 
-    local function getSetting(name)
-        local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-        local configData = textutils.unserialize(f.readAll())
-        local data = configData[name]
-        f.close()
-        return data
-    end
-
-    local function getLanguageData(language)
-        local f = fs.open("/zOS/Language/"..language..".txt", "r")
-        local data = textutils.unserialize(f.readAll())
-        print(language)
-        f.close()
-        return data
-    end
-
-    local lang = getLanguageData(getSetting('language'))
+    local lang = multishell.getLanguage()
+    local theme = multishell.loadTheme()
     multishell.setTitle(multishell.getCurrent(), lang.notifications.name)
-    local username = getSetting("username")
-
-    local function loadTheme()
-        local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-        local configData = textutils.unserialize(f.readAll())
-        local sTheme = configData.selectedTheme
-        if configData.useAtOnLauncher == false then
-            local w, h = term.getSize()
-            multishell.setTitle(1, lang.launcher.alternateName)
-        end
-        f.close()
-
-        local f = fs.open("/zOS/Configuration/themes.txt", "r")
-        local data = textutils.unserialize(f.readAll())[sTheme]
-        f.close()
-        
-        return data
-    end
-
-    theme = loadTheme()
 
     local function draw()
         term.setBackgroundColor(theme.background)
@@ -82,8 +47,8 @@ local function main()
                 term.setCursorPos(w/2+16, pos)
                 term.write('\215') -- ×
 
-                term.setCursorPos(w/2+15-string.len(textutils.formatTime(v.time, getSetting('use24hrTime'))), pos)
-                term.write(textutils.formatTime(v.time, getSetting('use24hrTime')))
+                term.setCursorPos(w/2+15-string.len(textutils.formatTime(v.time, multishell.getSetting('use24hrTime'))), pos)
+                term.write(textutils.formatTime(v.time, multishell.getSetting('use24hrTime')))
                 table.insert(closePositions, {x = w/2+16, y = pos, id = i})
                 pos = pos + 1
                 fullPos = fullPos + 1

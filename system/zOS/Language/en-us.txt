@@ -25,7 +25,6 @@
 		welcome = "Welcome to zOS",
 		shutdown = "Shutdown",
 		reboot = "Reboot",
-		logout = "Logout"
 	},
 	notifications = {
 		name = 'Notifications',
@@ -71,8 +70,11 @@
 						text = 'Please enter a new password:'
 					}
 				},
-				monitor = {
-					name = "Monitor"
+				info = {
+					name = "Info",
+					title = "Information",
+					version = "Version: %s",
+					branch = "Branch: %s",
 				}
 			}
 		},
@@ -184,6 +186,65 @@
 					}
 				}
 			}
+		},
+		peripherals = {
+			name = "Network",
+			title = "Network",
+			key = {
+				name = "Name",
+				type = "Type",
+			},
+			peripheralDD = {
+				name = " Peripheral ",
+				rename = "Rename",
+				remove = "Remove",
+				resetName = "Reset name"
+			},
+			monitorDD = {
+				name = " Monitor ",
+				setPrimary = "Set primary",
+				bootToMonitorDisabled = "[ ] Boot to monitor",
+				bootToMonitorEnabled = "[\4] Boot to monitor",
+			},
+			itemMenu = {
+				name = "Name: %s",
+				type = "Type: %s",
+				peripheralNotConnected = "The peripheral is not connected",
+				removeButton = " Remove ",
+				computer = {
+					id = "ID: %s",
+					label = "Label: %s",
+					isOn = "Is On: %s",
+					shutdown = " Shutdown ",
+					reboot = " Reboot ",
+					turnOn = " Turn on "
+				},
+				drive = {
+					noDisk = "No disk",
+					diskType = "Disk type: %s",
+					id = "ID: %s",
+					label = "Label: %s",
+					mountPath = "Mount path: /%s/",
+					songName = "Song name: %s",
+					eject = " Eject ",
+					openInFiles = " Open in zFile ",
+					play = " Play audio ",
+					stop = " Stop audio ",
+				}
+			}
+		},
+		createApp = {
+			appName = "Add Application",
+			title = "Add Application",
+			errors = {
+				fileNotFound = "File not found",
+				invalidFormat = "Invalid format",
+			},
+			icon = "Icon",
+			name = "Name",
+			path = "Path",
+			iconPath = "Icon Path",
+			create = " Create "
 		}
 	}
 }

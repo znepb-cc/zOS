@@ -1,15 +1,13 @@
 {
-  monitor = 1,
+  bootToMonitor = true,
   timeZone = -5,
   use24hrTime = false,
   autoupdate = true,
-  alwaysBootToMonitor = false,
   username = "User",
   selectedTheme = 1,
   useAtOnLauncher = true,
   autoUpdate = true,
-  monitorScale = 0.5,
   password = "",
   language = "en-us",
-  branch = "master",
+  branch = "development",
 }

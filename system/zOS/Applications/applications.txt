@@ -27,4 +27,11 @@
     fileName = "zFile",
     filePath = "/zOS/Applications/zFile.lua",
   },
+  {
+    nameType = "lang",
+    version = 1,
+    fileIconName = "peripherals.zif",
+    fileName = "peripherals",
+    filePath = "/zOS/Applications/peripherals.lua",
+  },
 }

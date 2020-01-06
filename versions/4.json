@@ -1,6 +1,25 @@
 {
-	"updateNotes": "Fixed updater",
+	"updateNotes": [
+		"- New API for getting themes, languages, and settings",
+		"- Files will be checked on startup",
+		"- Added autorun",
+		"- Removed paint and edit",
+		"- Added peripherals program",
+		"- Removed Monitor tab in Settings",
+		"- Added Info tab to settings"
+	],
 	"files": [
-		"zOS/System/n_Updater.lua"
+		"/zOS/Applications/applications.txt",
+		"/zOS/Applications/peripherals.lua",
+		"/zOS/Applications/zFile.lua",
+		"/zOS/Applications/zShop.lua",
+		"/zOS/Configuration/configuration.lua",
+		"/zOS/Configuration/peripherals.lua",
+		"/zOS/Language/en-us.txt",
+		"/zOS/System/Autorun.lua",
+		"/zOS/System/Launcher.lua",
+		"/zOS/System/Login.lua",
+		"/zOS/System/Settings.lua",
+		"zOS/System/System.lua"
 	]
 }

@@ -1,6 +1,6 @@
+local args = { ... }
+
 function main()
-    local lang
-    local theme
     local dir = "/"
     local dropdown = false
     local selectedList
@@ -20,37 +20,12 @@ function main()
     local sessionSharingPassword = "zf."..tostring(math.random(1000,9999))
     local recvTable
 
-    local function getSetting(name)
-		local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-		local configData = textutils.unserialize(f.readAll())
-		local data = configData[name]
-		f.close()
-		return data
-	end
-
-	local function getLanguageData(language)
-		local f = fs.open("/zOS/Language/"..language..".txt", "r")
-		local data = textutils.unserialize(f.readAll())
-		print(language)
-		f.close()
-		return data
+    if args[1] then
+        dir = args[1]
     end
-    
-    local function loadTheme()
-		local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-		local configData = textutils.unserialize(f.readAll())
-		local sTheme = configData.selectedTheme
-		f.close()
 
-		local f = fs.open("/zOS/Configuration/themes.txt", "r")
-		local data = textutils.unserialize(f.readAll())[sTheme]
-		f.close()
-		
-		return data
-	end
-
-    lang = getLanguageData(getSetting('language'))
-    theme = loadTheme()
+    local lang = multishell.getLanguage()
+    local theme = multishell.loadTheme()
     multishell.setTitle(multishell.getCurrent(), lang.applications.zFile.name)
     
     local function drawNav(selected)
@@ -183,7 +158,6 @@ function main()
             term.setCursorPos(x+1,y+i-1)
             print(v.text)
         end
-
     end
 
     local function textDialog(title,message)

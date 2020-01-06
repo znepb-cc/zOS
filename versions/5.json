@@ -1,0 +1,23 @@
+{
+	"files": [
+		"/zOS/Applications/applications.txt",
+		"/zOS/Applications/Icons/peripherals.zif",
+		"/zOS/Applications/Icons/shell.zif",
+		"/zOS/Applications/peripherals.lua",
+		"/zOS/Applications/zFile.lua",
+		"/zOS/Applications/zShop.lua",
+		"/zOS/Configuration/configuration.txt",
+		"/zOS/Configuration/peripherals.txt",
+		"/zOS/Language/en-us.txt",
+		"/zOS/System/AddProgram.lua",
+		"/zOS/System/Autorun.lua",
+		"/zOS/System/Boot.lua",
+		"/zOS/System/Kernel.lua",
+		"/zOS/System/Launcher.lua",
+		"/zOS/System/Login.lua",
+		"/zOS/System/Notifications.lua",
+		"/zOS/System/Settings.lua",
+		"/zOS/System/sysinfo.txt",
+		"/zOS/System/System.lua"
+	]
+}

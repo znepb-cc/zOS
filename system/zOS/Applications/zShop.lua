@@ -3,44 +3,8 @@ local function main()
     local home
     local apps
     local menu = 1
-    local theme = {}
-
-    local function loadTheme()
-        local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-        local configData = textutils.unserialize(f.readAll())
-        local sTheme = configData.selectedTheme
-        if configData.useAtOnLauncher == false then
-            local w, h = term.getSize()
-            multishell.setTitle(1, "Launcher")
-        end
-        f.close()
-
-        local f = fs.open("/zOS/Configuration/themes.txt", "r")
-        local data = textutils.unserialize(f.readAll())[sTheme]
-        f.close()
-        
-        return data
-    end
-
-    local function getSetting(name)
-        local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-        local configData = textutils.unserialize(f.readAll())
-        local data = configData[name]
-        f.close()
-        return data
-    end
-
-    local function getLanguageData(language)
-        local f = fs.open("/zOS/Language/"..language..".txt", "r")
-        local data = textutils.unserialize(f.readAll())
-        print(language)
-        f.close()
-        return data
-    end
-
-    local lang = getLanguageData(getSetting('language'))
-
-    theme = loadTheme()
+    local lang = multishell.getLanguage()
+    local theme = multishell.loadTheme()
 
     multishell.setTitle(multishell.getFocus(), lang.applications.zShop.name)
     local m = term.current()

@@ -1,7 +1,6 @@
 function main()
 	local tFiles = {}
 	local tFilePositions = {}
-	local theme = {}
 	local w, h = term.getSize()
 	local currentPage = 1
 	local selectedId = 0
@@ -12,24 +11,10 @@ function main()
 	local timeZoneOffsets = {["auto"] = "Auto", [0] = "UTC", [-4] = "EDT", [-5] = "EST", [-7] = "MST", [-6] = "MDT"}
 	local timeZoneOffsetsOtherWay = {["Auto"] = "auto", ["UTC"] = 0, ["EDT"] = -4, ['EST'] = -5, ["MST"] = -7, ["MDT"] = -6 }
 	local monitors
+	local getSetting = multishell.getSetting
 
-	local function getSetting(name)
-		local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-		local configData = textutils.unserialize(f.readAll())
-		local data = configData[name]
-		f.close()
-		return data
-	end
-
-	local function getLanguageData(language)
-		local f = fs.open("/zOS/Language/"..language..".txt", "r")
-		local data = textutils.unserialize(f.readAll())
-		print(language)
-		f.close()
-		return data
-	end
-
-	local lang = getLanguageData(getSetting('language'))
+	local theme = multishell.loadTheme()
+	local lang = multishell.getLanguage()
 	multishell.setTitle(multishell.getCurrent(), lang.applications.settings.name)
 
 	local function setSetting(name, value)
@@ -46,7 +31,7 @@ function main()
 	end
 
 	local function drawTop(selected)
-		local tabs = {lang.applications.settings.tab.general.name, lang.applications.settings.tab.customization.name, lang.applications.settings.tab.security.name, lang.applications.settings.tab.monitor.name}
+		local tabs = {lang.applications.settings.tab.general.name, lang.applications.settings.tab.customization.name, lang.applications.settings.tab.security.name, lang.applications.settings.tab.info.name}
 		term.setBackgroundColor(colors.gray)
 		term.setCursorPos(1,1)
 		term.clearLine()
@@ -74,19 +59,6 @@ function main()
 		else
 			return true
 		end
-	end
-
-	local function loadTheme()
-		local f = fs.open("/zOS/Configuration/configuration.txt", "r")
-		local configData = textutils.unserialize(f.readAll())
-		local sTheme = configData.selectedTheme
-		f.close()
-
-		local f = fs.open("/zOS/Configuration/themes.txt", "r")
-		local data = textutils.unserialize(f.readAll())[sTheme]
-		f.close()
-		
-		return data
 	end
 
 	local function drawTileApplication(tData, nX, nY, nID)
@@ -132,8 +104,6 @@ function main()
 		
 		hApplicationsFile.close()
 	end
-
-	theme = loadTheme()
 
 	local function drawDialog(text)
 		local dialogWidth = string.len(text)+4
@@ -296,32 +266,15 @@ function main()
 			term.setBackgroundColor(theme.background)
 			term.setTextColor(theme.text)
 			term.setCursorPos(2,3)
-			term.write('Monitor')
-
+			term.write(lang.applications.settings.tab.info.title)
 			term.setCursorPos(2,5)
-			term.write('Choose which monitor to boot to')
-			drawDropdown(w-string.len(string.format(" %s \31 ", monitors[getSetting('monitor')])),5,monitors,getSetting('monitor'))
+			local versionFile = fs.open('zOS/System/sysinfo.txt', "r")
+			local version = textutils.unserialize(versionFile.readAll()).displayVersion
+			versionFile.close()
+			term.write(lang.applications.settings.tab.info.version:format(version))
+			term.setCursorPos(2,6)
+			term.write(lang.applications.settings.tab.info.branch:format(getSetting('branch')))
 
-			term.setBackgroundColor(theme.background)
-			term.setTextColor(theme.text)
-			term.setCursorPos(2,7)
-			term.write('Always boot to monitor')
-			drawToggle(w-3,7,getSetting('alwaysBootToMonitor'))
-
-			term.setBackgroundColor(theme.background)
-			term.setTextColor(theme.text)
-			term.setCursorPos(2,9)
-			term.write('Monitor text scale')
-			term.setCursorPos(w-9, 9)
-			term.setBackgroundColor(colors.gray)
-			term.setTextColor(colors.lightGray)
-			term.write(" -     + ")
-			if string.len(tostring(getSetting('monitorScale'))) == 1 then
-				term.setCursorPos(w-5,9)
-			elseif string.len(tostring(getSetting('monitorScale'))) == 3 then
-				term.setCursorPos(w-6,9)
-			end
-			term.write(getSetting('monitorScale'))
 		elseif page == "dev" then
 			term.setCursorPos(2,3)
 			term.setBackgroundColor(theme.background)
@@ -347,7 +300,7 @@ function main()
 				drawPage(2)
 			elseif x >= 17 and x <= 23 and y == 1 then
 				drawPage(3)
-			elseif x >= 24 and x <= 32 and y == 1 then
+			elseif x >= 24 and x <= 29 and y == 1 then
 				drawPage(4)
 			elseif x == w-1 and y == 1 and multishell.zOSenabled == nil then
 				os.reboot()
@@ -487,80 +440,7 @@ function main()
 					
 				end
 			elseif currentPage == 4 then
-				if m == 1 and x >= w-string.len(string.format(" %s \31 ",  monitors[getSetting('monitor')])) and x <= w-1 and y == 5 and dropdownSetting == '' then
-					drawDropdownSelection(w-string.len(string.format(" %s \31 ", monitors[getSetting('monitor')])),5,monitors,getSetting('monitor'), 'monitor')
-				elseif m == 1 and x >= w-3 and x <= w-1 and y == 7 then
-					local value = toggle(getSetting("alwaysBootToMonitor"))
-					setSetting("alwaysBootToMonitor", value)
-					drawToggle(w-3,7,value)
-				elseif m == 1 and x >= w-3 and x <= w-1 and y == 9 then
-					if getSetting("monitorScale") ~= 5 then
-						setSetting("monitorScale", getSetting("monitorScale")+0.5)
-						term.setCursorPos(w-9, 9)
-						term.setBackgroundColor(colors.gray)
-						term.setTextColor(colors.lightGray)
-						term.write(" -     + ")
-						if string.len(tostring(getSetting('monitorScale'))) == 1 then
-							term.setCursorPos(w-5,9)
-						elseif string.len(tostring(getSetting('monitorScale'))) == 3 then
-							term.setCursorPos(w-6,9)
-						end
-						term.write(getSetting('monitorScale'))
-
-						term.setCursorPos(w-3, 9)
-						term.setBackgroundColor(colors.lightGray)
-						term.setTextColor(colors.gray)
-						term.write(" + ")
-						
-						sleep(0.1)
-
-						term.setCursorPos(w-3, 9)
-						term.setBackgroundColor(colors.gray)
-						term.setTextColor(colors.lightGray)
-						term.write(" + ")
-					end
-				elseif m == 1 and x >= w-9 and x <= w-7 and y == 9 then
-					if getSetting("monitorScale") ~= 0.5 then
-						setSetting("monitorScale", getSetting("monitorScale")-0.5)
-						term.setCursorPos(w-9, 9)
-						term.setBackgroundColor(colors.gray)
-						term.setTextColor(colors.lightGray)
-						term.write(" -     + ")
-						if string.len(tostring(getSetting('monitorScale'))) == 1 then
-							term.setCursorPos(w-5,9)
-						elseif string.len(tostring(getSetting('monitorScale'))) == 3 then
-							term.setCursorPos(w-6,9)
-						end
-						term.write(getSetting('monitorScale'))
-
-						term.setCursorPos(w-9, 9)
-						term.setBackgroundColor(colors.lightGray)
-						term.setTextColor(colors.gray)
-						term.write(" - ")
-						
-						sleep(0.1)
-
-						term.setCursorPos(w-9, 9)
-						term.setBackgroundColor(colors.gray)
-						term.setTextColor(colors.lightGray)
-						term.write(" - ")
-					end
-					
-				else
-					if dropdown ~= {} then
-						local count = 1
-						for i, v in pairs(dropdown) do
-							if x >= dropdownX and x <= dropdownEndX and y == dropdownY+count-1 then
-								setSetting(dropdownSetting, i)
-								
-							end
-							count = count + 1
-						end
-						drawPage(4)
-						dropdown = {}
-						dropdownSetting = ''
-					end
-				end
+				
 			end
 		elseif e[1] == "key" then
 			if e[2] == keys.f1 then
