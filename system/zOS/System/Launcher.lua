@@ -48,10 +48,20 @@ end
 
 local function drawTileApplication(tData, nX, nY, nID)
 	if fs.exists("/zOS/Applications/Icons/"..tData.fileIconName) then
+		if tData.fileIconName:match("^.+(%..+)$") == ".zif" then
+			zif.drawImage(nX,nY,"/zOS/Applications/Icons/"..tData.fileIconName)
+			term.setBackgroundColor(theme.background)
+			term.setCursorPos(nX, nY+4)
+		elseif tData.fileIconName:match("^.+(%..+)$") == ".nfp" then
+			paintutils.drawImage(nX,nY,paintutils.loadImage("/zOS/Applications/Icons/"..tData.fileIconName))
+			term.setBackgroundColor(theme.background)
+			term.setCursorPos(nX, nY+4)
+		else
+			zif.drawImage(nX,nY,"/zOS/Applications/Icons/default.zif")
+			term.setBackgroundColor(theme.background)
+			term.setCursorPos(nX, nY+4)
+		end
 		
-		zif.drawImage(nX,nY,"/zOS/Applications/Icons/"..tData.fileIconName)
-		term.setBackgroundColor(theme.background)
-		term.setCursorPos(nX, nY+4)
 	else
 		zif.drawImage(nX,nY,"/zOS/Applications/Icons/default.zif")
 		term.setBackgroundColor(theme.background)
@@ -60,6 +70,7 @@ local function drawTileApplication(tData, nX, nY, nID)
 	if nID == selectedId then
 		term.setBackgroundColor(theme.selectionBackground)
 	end
+	term.setTextColor(theme.text)
 	if tData.nameType == 'default' or tData.nameType == nil then
 		term.write(tData.fileName)
 	elseif tData.nameType == 'lang' then
@@ -125,8 +136,10 @@ local function drawMenu()
 
 	term.setCursorPos(w-1,2)
 	term.write("%")
-	
 	term.setCursorPos(w-3,2)
+	term.write("+")
+	
+	term.setCursorPos(w-5,2)
 	if internetOkay == false then
 		term.setTextColor(colors.red)
 		term.write("\7")
@@ -148,14 +161,12 @@ local function events()
 			local clickedOnce = false
 			local m, x, y = e[2], e[3], e[4]
 			if x >= 2 and x <= string.len(username)+3 and y == 2 and menu == 1 then
-				drawContentMenuStructure(2,3,10,4)
+				drawContentMenuStructure(2,3,10,3)
 				term.setTextColor(theme.dropdownText)
 				term.setCursorPos(3,4)
 				term.write(lang.launcher.shutdown)
 				term.setCursorPos(3,5)
 				term.write(lang.launcher.reboot)
-				term.setCursorPos(3,6)
-				term.write(lang.launcher.logout)
 				term.setCursorPos(2,2)
 				term.setTextColor(theme.text)
 				term.setBackgroundColor(theme.selectionBackground)
@@ -167,11 +178,26 @@ local function events()
 				term.setBackgroundColor(theme.selectionBackground)
 				term.setTextColor(theme.text)
 				term.write('%')
-				sleep(0.15)
+				sleep(0.1)
 				term.setBackgroundColor(theme.background)
 				term.setTextColor(theme.text)
 				term.setCursorPos(w-1, 2)
 				term.write('%')
+			elseif x == w-3 and y == 2 and menu == 1 then
+				term.setCursorPos(w-3, 2)
+				term.setBackgroundColor(theme.selectionBackground)
+				term.setTextColor(theme.text)
+				term.write('+')
+				sleep(0.1)
+				multishell.setFocus(multishell.launch({
+					['shell'] = shell,
+					['multishell'] = multishell,
+				}, "/zOS/System/AddProgram.lua"))
+				os.queueEvent('multishell_redraw')
+				term.setBackgroundColor(theme.background)
+				term.setTextColor(theme.text)
+				term.setCursorPos(w-3, 2)
+				term.write('+')
 			elseif menu == 2 then
 				
 
@@ -244,7 +270,8 @@ local function internetTest()
 	-- Disconnected: !
 	-- Online: ?
 	while true do
-		term.setCursorPos(w-3,2)
+		term.setCursorPos(w-5,2)
+		term.setBackgroundColor(theme.background)
 		term.setTextColor(colors.yellow)
 		term.write("\7")
 		term.setTextColor(theme.text)
@@ -252,12 +279,12 @@ local function internetTest()
 		if not data then
 			internetOkay = false
 			term.setTextColor(colors.red)
-			term.setCursorPos(w-3,2)
+			term.setCursorPos(w-5,2)
 			term.write("\7")
 		else
 			internetOkay = true
 			term.setTextColor(colors.lime)
-			term.setCursorPos(w-3,2)
+			term.setCursorPos(w-5,2)
 			term.write("\7")
 		end
 		term.setTextColor(theme.text)

@@ -233,6 +233,19 @@
 					stop = " Stop audio ",
 				}
 			}
+		},
+		createApp = {
+			appName = "Add Application",
+			title = "Add Application",
+			errors = {
+				fileNotFound = "File not found",
+				invalidFormat = "Invalid format",
+			},
+			icon = "Icon",
+			name = "Name",
+			path = "Path",
+			iconPath = "Icon Path",
+			create = " Create "
 		}
 	}
 }

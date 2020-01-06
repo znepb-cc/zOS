@@ -1,10 +1,20 @@
 local w, h = term.getSize()
 local imagePos = h/2-7/2
 local textPos = h/2+5
-term.setBackgroundColor(colors.black)
-term.clear()
-paintutils.drawImage(paintutils.loadImage("/zOS/Images/zOS.nfp"),w/2-20/2,h/2-7/2)
+
+local function maindraw()
+    term.setBackgroundColor(colors.black)
+    term.clear()
+    paintutils.drawImage(paintutils.loadImage("/zOS/Images/zOS.nfp"),w/2-20/2,h/2-7/2)
+end
+
+maindraw()
+
 paintutils.drawLine(w/2-20/2,textPos,w/2+20/2,textPos, colors.lightGray)
+
+if fs.exists('/.temp') then
+    fs.delete("/.temp")
+end
 
 local function getSetting(name)
     local f = fs.open("/zOS/Configuration/configuration.txt", "r")
@@ -88,11 +98,12 @@ if getSetting('autoUpdate') == true then
     paintutils.drawLine(w/2-20/2, textPos, w/2-20/2+((progress/100)*20), textPos, colors.lightBlue)
 end
 
-term.setBackgroundColor(colors.black)
-
 local ready = true
 
-if getSetting('bootToMonitor') == true then
+maindraw()
+term.setBackgroundColor(colors.black)
+
+if getSetting('bootToMonitor') == true and peripheral.find('monitor') then
     local peripheralsFile = fs.open('zOS/Configuration/peripherals.txt', "r")
     newFPL = textutils.unserialize(peripheralsFile.readAll())
     peripheralsFile.close()
@@ -104,8 +115,8 @@ if getSetting('bootToMonitor') == true then
             term.clear()
             paintutils.drawImage(paintutils.loadImage("/zOS/Images/monitor.nfp"),w/2-20/2,imagePos)
             term.setBackgroundColor(colors.black)
-            term.setCursorPos(w/2-string.len("        zOS has booted to the monitor        ")/2,textPos)
-            term.write("        zOS has booted to the monitor        ")
+            term.setCursorPos(w/2-string.len("zOS has booted to the monitor")/2,textPos)
+            term.write("zOS has booted to the monitor")
             term.setCursorPos(3,h-1)
             local m = peripheral.wrap(v.name)
             m.setTextScale(v.textScale)
@@ -114,15 +125,12 @@ if getSetting('bootToMonitor') == true then
         end
     end
 elseif peripheral.find('monitor') then
-    term.setCursorPos(w/2-string.len("        Press F1 to boot to monitor        ")/2,textPos)
-    term.write("        Press F1 to boot to monitor        ")
+    term.setCursorPos(w/2-string.len("Press F1 to boot to monitor")/2,textPos)
+    term.write("Press F1 to boot to monitor")
 else
-    term.setCursorPos(w/2-string.len("        Press F2 for BIOS        ")/2,textPos)
-    term.write("        Press F3 for BIOS        ")
+    term.setCursorPos(w/2-string.len("Press F3 for BIOS")/2,textPos)
+    term.write("Press F3 for BIOS")
 end
-
-
-
 
 local function findFirstOfType(tp)
     for _, name in ipairs(peripheral.getNames()) do
