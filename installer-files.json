@@ -19,6 +19,8 @@
 		"/zOS/Applications/Icons/settings.zif",
 		"/zOS/Applications/Icons/zFile.zif",
 		"/zOS/Applications/Icons/zShop.zif",
+		"/zOS/Applications/Icons/shell.zif",
+		"/zOS/Applications/Icons/peripherals.zif",
 		"/zOS/Applications/applications.txt",
 		"/zOS/Applications/zFile.lua",
 		"/zOS/Applications/zShop.lua",
@@ -33,6 +35,7 @@
 		"/zOS/System/API/aeslua",
 		"/zOS/System/API/json.lua",
 		"/zOS/System/API/zif.lua",
+		"/zOS/System/AddProgram.lua",
 		"/zOS/System/BIOS.lua",
 		"/zOS/System/Boot.lua",
 		"/zOS/System/Launcher.lua",
@@ -43,6 +46,6 @@
 		"/zOS/System/Settings.lua",
 		"/zOS/System/sysinfo.txt",
 		"/zOS/System/System.lua",
-		"/zOS/System/Updater.lua",
+		"/zOS/System/Updater.lua"
 	]
 }

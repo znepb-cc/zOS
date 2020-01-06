@@ -1,0 +1,11 @@
+{
+	"files": [
+		"/zOS/Applications/Icons/peripherals.zif",
+		"/zOS/Applications/Icons/shell.zif",
+		"/zOS/Language/en-us.txt",
+		"/zOS/System/AddProgram.lua",
+		"/zOS/System/Boot.lua",
+		"/zOS/System/Launcher.lua",
+		"/zOS/System/sysinfo.lua",
+	]
+}
