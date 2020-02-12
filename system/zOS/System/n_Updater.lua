@@ -63,7 +63,7 @@ for cv = oldV+1, newV do
         term.setCursorPos(1,1)
         term.setBackgroundColor(colors.black)
         
-        local data = http.get("https://raw.githubusercontent.com/znepb/zOS/"..branch.."/system/"..v)
+        local data = http.get("https://raw.githubusercontent.com/znepb-cc/zOS/"..branch.."/system/"..v)
         local fileInfo = data.readAll()
         data.close()
         local file = fs.open(v, "w")
