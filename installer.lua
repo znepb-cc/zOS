@@ -1,7 +1,7 @@
-local baseURL = "https://raw.githubusercontent.com/znepb/zOS/master/"
+local baseURL = "https://raw.githubusercontent.com/znepb-cc/zOS/master/"
 local args = {...}
 if args[1] == "--dev" then
-    baseURL = "https://raw.githubusercontent.com/znepb/zOS/development/"
+    baseURL = "https://raw.githubusercontent.com/znepb-cc/zOS/development/"
 end
 
 print('zOS Installer')
