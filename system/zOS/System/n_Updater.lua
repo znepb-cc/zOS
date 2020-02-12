@@ -34,7 +34,7 @@ end
 local progress = 0
 mainDraw()
 updateText('Updating...')
-local data = http.get("https://raw.githubusercontent.com/znepb/zOS/"..branch.."/versions/current.txt")
+local data = http.get("https://raw.githubusercontent.com/znepb-cc/zOS/"..branch.."/versions/current.txt")
 local newV = data.readAll()
 data.close()
 
@@ -49,7 +49,7 @@ file.close()
 for cv = oldV+1, newV do
 
     updateText('Downloading update information...')
-    local data = http.get("https://raw.githubusercontent.com/znepb/zOS/"..branch.."/versions/"..cv..".json")
+    local data = http.get("https://raw.githubusercontent.com/znepb-cc/zOS/"..branch.."/versions/"..cv..".json")
     local updateInformation = json.decode(data.readAll())
     data.close()
 
