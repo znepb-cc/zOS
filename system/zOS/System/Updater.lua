@@ -34,7 +34,7 @@ end
 local progress = 0
 mainDraw()
 updateText('Updating...')
-local data = http.get("https://raw.githubusercontent.com/znepb/zOS/"..branch.."/versions/current.txt")
+local data = http.get("https://raw.githubusercontent.com/znepb-cc/zOS/"..branch.."/versions/current.txt")
 local newV = data.readAll()
 data.close()
 
